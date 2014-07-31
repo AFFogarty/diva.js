@@ -11,7 +11,6 @@ Bookmark locations in the document.
         {
             init: function(divaSettings, divaInstance)
             {
-//                localStorage.clear();
                 // Check if the browser can do local storage
                 if (typeof(Storage) !== "undefined") {
                     if (localStorage.getItem("diva-bookmarks") === null)
@@ -31,9 +30,15 @@ Bookmark locations in the document.
                     return true;
                 }
 
-                function _add_bookmark(pageIndex)
+                function _add_bookmark(pageIndex, name)
                 {
-                    bookmarkObject.push(parseInt(pageIndex));
+                    // The bookmark object that we will save
+                    var bookmark = {
+                        page: pageIndex,
+                        name: name
+                    };
+
+                    bookmarkObject.push(bookmark);
                 }
 
                 /**
@@ -59,14 +64,31 @@ Bookmark locations in the document.
 
                 divaInstance.bookmarkCurrentLocation = function()
                 {
-                    _add_bookmark(divaInstance.getCurrentPageNumber());
-                    _sort_bookmarks();
+                    var name = "Bookmark " + bookmarkObject.length;
+
+                    _add_bookmark(divaInstance.getCurrentPageNumber(), name);
+                    _save_bookmarks();
+                };
+
+                divaInstance.removeBookmark = function(index)
+                {
+                    bookmarkObject.splice(index, 1);
                     _save_bookmarks();
                 };
 
                 divaInstance.getBookmarks = function()
                 {
                     return bookmarkObject;
+                };
+
+                /**
+                 * Diva goes to the location of the specified bookmark.
+                 *
+                 * @param index 0-indexed integer
+                 */
+                divaInstance.goToBookmark = function(index)
+                {
+                    divaInstance.gotoPageByNumber(bookmarkObject[parseInt(index)].page);
                 };
 
                 return true;
