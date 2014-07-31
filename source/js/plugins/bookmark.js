@@ -14,6 +14,11 @@ Bookmark locations in the document.
 //                Bookmark the current location if event called
 //                diva.Events.subscribe("BookmarkCurrentLocation", divaInstance.bookmarkCurrentLocation);
 
+                // Create the pop-up window.
+                $("body").append('<div class="diva-bookmarks">Lol</div>');
+                var bookmarksDiv = $(".diva-bookmarks");
+                console.log(bookmarksDiv);
+
                 // Check if the browser can do local storage
                 if (typeof(Storage) !== "undefined") {
                     if (localStorage.getItem("diva-bookmarks") === null)
@@ -25,6 +30,8 @@ Bookmark locations in the document.
                     console.log(localStorage.getItem("diva-bookmarks"));
                     console.log(JSON.parse(localStorage.getItem("diva-bookmarks")));
                     var bookmarkObject = JSON.parse(localStorage.getItem("diva-bookmarks"));
+                    // Print out the list of bookmarks
+                    _render_gui_panel();
                     console.log("BookmarkObject: ");
                     console.log(bookmarkObject);
                 } else {
@@ -43,6 +50,7 @@ Bookmark locations in the document.
 
                     bookmarkObject.push(bookmark);
                     diva.Events.publish("BookmarksUpdated", bookmarkObject);
+                    _render_gui_panel();
                     return bookmark;
                 }
 
@@ -65,6 +73,25 @@ Bookmark locations in the document.
                 {
                     localStorage.setItem("diva-bookmarks",
                         JSON.stringify(bookmarkObject));
+                }
+
+                /**
+                 * Fill bookmarksDiv with the correct content.
+                 *
+                 * @private
+                 */
+                function _render_gui_panel()
+                {
+                    var content = "<ul>";
+
+                    for (var i = 0; i < bookmarkObject.length; i++)
+                    {
+                        content += '<li><a href="' + bookmarkObject[i]["page"]
+                            + '">' + bookmarkObject[i]["name"] + "</a></li>";
+                    }
+                    content += "</ul>";
+
+                    bookmarksDiv.html(content);
                 }
 
                 /**
@@ -110,6 +137,11 @@ Bookmark locations in the document.
                 };
 
                 return true;
+            },
+            handleClick: function(event)
+            {
+                $(".diva-bookmarks").show();
+                return false;
             },
             pluginName: 'bookmark',
             titleText: 'Bookmark document locations'
