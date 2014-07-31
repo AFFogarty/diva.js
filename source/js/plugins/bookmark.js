@@ -25,6 +25,17 @@ Bookmark locations in the document.
                     return true;
                 }
 
+
+                /**
+                 * Persist the bookmarks to the user's browser.
+                 *
+                 * @private
+                 */
+                function _save_bookmarks()
+                {
+                    localStorage.setItem("diva-bookmarks", bookmarkObject);
+                }
+
                 return true;
             },
             pluginName: 'bookmark',
