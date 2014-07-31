@@ -11,6 +11,9 @@ Bookmark locations in the document.
         {
             init: function(divaSettings, divaInstance)
             {
+//                Bookmark the current location if event called
+//                diva.Events.subscribe("BookmarkCurrentLocation", divaInstance.bookmarkCurrentLocation);
+
                 // Check if the browser can do local storage
                 if (typeof(Storage) !== "undefined") {
                     if (localStorage.getItem("diva-bookmarks") === null)
@@ -39,6 +42,8 @@ Bookmark locations in the document.
                     };
 
                     bookmarkObject.push(bookmark);
+                    diva.Events.publish("BookmarksUpdated", bookmarkObject);
+                    return bookmark;
                 }
 
                 /**
@@ -62,6 +67,9 @@ Bookmark locations in the document.
                         JSON.stringify(bookmarkObject));
                 }
 
+                /**
+                 * Save Diva's current location as a bookmark.
+                 */
                 divaInstance.bookmarkCurrentLocation = function()
                 {
                     var name = "Bookmark " + bookmarkObject.length;
@@ -70,12 +78,22 @@ Bookmark locations in the document.
                     _save_bookmarks();
                 };
 
+                /**
+                 * Remove a bookmark from the list of bookmarks.
+                 *
+                 * @param index 0-indexed integer
+                 */
                 divaInstance.removeBookmark = function(index)
                 {
                     bookmarkObject.splice(index, 1);
                     _save_bookmarks();
                 };
 
+                /**
+                 *
+                 *
+                 * @returns array The bookmark array
+                 */
                 divaInstance.getBookmarks = function()
                 {
                     return bookmarkObject;
