@@ -11,6 +11,7 @@ Bookmark locations in the document.
         {
             init: function(divaSettings, divaInstance)
             {
+//                localStorage.clear();
                 // Check if the browser can do local storage
                 if (typeof(Storage) !== "undefined") {
                     if (localStorage.getItem("diva-bookmarks") === null)
@@ -19,6 +20,8 @@ Bookmark locations in the document.
                         localStorage.setItem("diva-bookmarks", JSON.stringify([]));
                     }
                     // Grab the list
+                    console.log(localStorage.getItem("diva-bookmarks"));
+                    console.log(JSON.parse(localStorage.getItem("diva-bookmarks")));
                     var bookmarkObject = JSON.parse(localStorage.getItem("diva-bookmarks"));
                     console.log("BookmarkObject: ");
                     console.log(bookmarkObject);
@@ -40,7 +43,7 @@ Bookmark locations in the document.
                  */
                 function _sort_bookmarks()
                 {
-                    // TODO
+                    bookmarkObject.sort(function(a,b){return a-b;});
                 }
 
                 /**
@@ -56,7 +59,8 @@ Bookmark locations in the document.
 
                 divaInstance.bookmarkCurrentLocation = function()
                 {
-                    _add_bookmark(5);
+                    _add_bookmark(divaInstance.getCurrentPageNumber());
+                    _sort_bookmarks();
                     _save_bookmarks();
                 };
 
