@@ -17,7 +17,6 @@ Bookmark locations in the document.
                 // Create the pop-up window.
                 $("body").append('<div class="diva-bookmarks">Lol</div>');
                 var bookmarksDiv = $(".diva-bookmarks");
-                console.log(bookmarksDiv);
 
                 // Check if the browser can do local storage
                 if (typeof(Storage) !== "undefined") {
@@ -27,13 +26,9 @@ Bookmark locations in the document.
                         localStorage.setItem("diva-bookmarks", JSON.stringify([]));
                     }
                     // Grab the list
-                    console.log(localStorage.getItem("diva-bookmarks"));
-                    console.log(JSON.parse(localStorage.getItem("diva-bookmarks")));
                     var bookmarkObject = JSON.parse(localStorage.getItem("diva-bookmarks"));
                     // Print out the list of bookmarks
                     _render_gui_panel();
-                    console.log("BookmarkObject: ");
-                    console.log(bookmarkObject);
                 } else {
                     // User's browser doesn't support local storage
                     console.log("Browser does not support local storage.");
@@ -82,7 +77,15 @@ Bookmark locations in the document.
                  */
                 function _render_gui_panel()
                 {
-                    var content = "<ul>";
+                    bookmarksDiv.empty();
+
+                    var content = '<h3>Create Bookmark</h3>' +
+                        '<form class="create-bookmark">' +
+                        '<input type="text" class="bookmark-name">' +
+                        '<input type="submit" value="Create"></form>' +
+                        '<h3>Bookmarks</h3>';
+
+                    content += "<ul>";
 
                     for (var i = 0; i < bookmarkObject.length; i++)
                     {
@@ -90,16 +93,48 @@ Bookmark locations in the document.
                             + '">' + bookmarkObject[i]["name"] + "</a></li>";
                     }
                     content += "</ul>";
-
+                    // Fill it with the content
                     bookmarksDiv.html(content);
+                    // Now, we need to bind the event handlers.
+                    bookmarksDiv.find("li a").each(
+                        function(index)
+                        {
+                            // Trigger the page redirection
+                            $(this).click(
+                                function(event)
+                                {
+                                    // We don't want the link to trigger
+                                    event.preventDefault();
+                                    console.log("Click trigger on ", index);
+                                    divaInstance.goToBookmark(index);
+                                });
+                        }
+                    );
+                    bookmarksDiv.find(".create-bookmark").each(
+                        function()
+                        {
+                            $(this).submit(
+                                function(event)
+                                {
+                                    event.preventDefault();
+                                    var name = bookmarksDiv.find(".bookmark-name").val();
+                                    divaInstance.bookmarkCurrentLocation(name);
+                                    alert('Bookmark "' + name + '" created at current location');
+                                }
+                            );
+                        }
+                    )
                 }
 
                 /**
                  * Save Diva's current location as a bookmark.
                  */
-                divaInstance.bookmarkCurrentLocation = function()
+                divaInstance.bookmarkCurrentLocation = function(name)
                 {
-                    var name = "Bookmark " + bookmarkObject.length;
+                    if (name === undefined)
+                    {
+                        name = "Bookmark " + bookmarkObject.length;
+                    }
 
                     _add_bookmark(divaInstance.getCurrentPageNumber(), name);
                     _save_bookmarks();
@@ -141,6 +176,7 @@ Bookmark locations in the document.
             handleClick: function(event)
             {
                 $(".diva-bookmarks").show();
+                $(".diva-bookmarks").hover(null,function(){$(".diva-bookmarks").hide();});
                 return false;
             },
             pluginName: 'bookmark',
