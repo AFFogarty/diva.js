@@ -32,12 +32,15 @@ Bookmark locations in the document.
                     // Grab the list
                     var bookmarkObject = JSON.parse(localStorage.getItem("diva-bookmarks"));
                     // Print out the list of bookmarks
-                    _render_gui_panel();
+                    _render_bookmarks_list();
                 } else {
                     // User's browser doesn't support local storage
                     console.log("Browser does not support local storage.");
                     return true;
                 }
+
+                // Initialize the window
+                _render_bookmark_window();
 
                 function _add_bookmark(pageIndex, name)
                 {
@@ -71,15 +74,15 @@ Bookmark locations in the document.
                 {
                     localStorage.setItem("diva-bookmarks",
                         JSON.stringify(bookmarkObject));
-                    _render_gui_panel();
+                    _render_bookmarks_list();
                 }
 
                 /**
-                 * Fill bookmarksDiv with the correct content.
+                 * Render the entire bookmarks window.
                  *
                  * @private
                  */
-                function _render_gui_panel()
+                function _render_bookmark_window()
                 {
                     // So that we don't have memory leaks
                     bookmarksDiv.empty();
@@ -93,48 +96,10 @@ Bookmark locations in the document.
                         '<input type="text" class="bookmark-name" placeholder="Name">' +
                         '<input type="submit" value="Create"></form></div>';
 
-                    content += '<div class="diva-bookmarks-window-list">' +
-                        '<h3>Bookmarks</h3><ul>';
-
-                    for (var i = 0; i < bookmarkObject.length; i++)
-                    {
-                        content += '<li><a href="' + bookmarkObject[i]["page"]
-                            + '" class="visit-bookmark">' + bookmarkObject[i]["name"] + '</a> - ' +
-                            '<a href="#delete" class="delete-bookmark">' +
-                            'Delete</a></li>';
-                    }
-                    content += "</ul></div>";
+                    content += '<div class="diva-bookmarks-window-list"></div>';
                     // Fill it with the content
                     bookmarksDiv.html(content);
-                    // Now, we need to bind the event handlers.
-                    bookmarksDiv.find(".visit-bookmark").each(
-                        function(index)
-                        {
-                            // Trigger the page redirection
-                            $(this).click(
-                                function(event)
-                                {
-                                    // We don't want the link to trigger
-                                    event.preventDefault();
-                                    console.log("Click trigger on ", index);
-                                    divaInstance.goToBookmark(index);
-                                });
-                        }
-                    );
-                    bookmarksDiv.find(".delete-bookmark").each(
-                        function(index)
-                        {
-                            // Trigger the page redirection
-                            $(this).click(
-                                function(event)
-                                {
-                                    // We don't want the link to trigger
-                                    event.preventDefault();
-                                    console.log("Delete trigger on ", index);
-                                    divaInstance.removeBookmark(index);
-                                });
-                        }
-                    );
+
                     bookmarksDiv.find(".create-bookmark").each(
                         function()
                         {
@@ -148,13 +113,70 @@ Bookmark locations in the document.
                                 }
                             );
                         }
-                    )
+                    );
                     bookmarksDiv.find(".diva-bookmarks-window-close").click(
                         function()
                         {
                             bookmarksDiv.hide();
                         }
-                    )
+                    );
+
+                    // Render the list of bookmarks
+                    _render_bookmarks_list();
+                }
+
+                /**
+                 * Render the bookmarks list.
+                 *
+                 * @private
+                 */
+                function _render_bookmarks_list()
+                {
+                    listDiv = $(bookmarksDiv.selector + " .diva-bookmarks-window-list");
+                    // So that we don't have memory leaks
+                    listDiv.empty();
+
+                    var content = '<h3>Bookmarks</h3><ul>';
+
+                    for (var i = 0; i < bookmarkObject.length; i++)
+                    {
+                        content += '<li><a href="' + bookmarkObject[i]["page"]
+                            + '" class="visit-bookmark">' + bookmarkObject[i]["name"] + '</a> - ' +
+                            '<a href="#delete" class="delete-bookmark">' +
+                            'Delete</a></li>';
+                    }
+                    content += "</ul>";
+                    // Fill it with the content
+                    listDiv.html(content);
+                    // Now, we need to bind the event handlers.
+                    listDiv.find(".visit-bookmark").each(
+                        function(index)
+                        {
+                            // Trigger the page redirection
+                            $(this).click(
+                                function(event)
+                                {
+                                    // We don't want the link to trigger
+                                    event.preventDefault();
+                                    console.log("Click trigger on ", index);
+                                    divaInstance.goToBookmark(index);
+                                });
+                        }
+                    );
+                    listDiv.find(".delete-bookmark").each(
+                        function(index)
+                        {
+                            // Trigger the page redirection
+                            $(this).click(
+                                function(event)
+                                {
+                                    // We don't want the link to trigger
+                                    event.preventDefault();
+                                    console.log("Delete trigger on ", index);
+                                    divaInstance.removeBookmark(index);
+                                });
+                        }
+                    );
                 }
 
                 /**
