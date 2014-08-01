@@ -19,8 +19,8 @@ Bookmark locations in the document.
                     });
 
                 // Create the pop-up window.
-                $("body").append('<div class="diva-bookmarks">Lol</div>');
-                var bookmarksDiv = $(".diva-bookmarks");
+                $(divaSettings.parentSelector).append('<div class="diva-bookmarks-window"></div>');
+                var bookmarksDiv = $(".diva-bookmarks-window");
 
                 // Check if the browser can do local storage
                 if (typeof(Storage) !== "undefined") {
@@ -84,13 +84,17 @@ Bookmark locations in the document.
                     // So that we don't have memory leaks
                     bookmarksDiv.empty();
 
-                    var content = '<h3>Create Bookmark</h3>' +
+                    var content = '<div class="diva-bookmarks-window-form"><div class="diva-bookmarks-window-toolbar">' +
+                        '<div id="diva-bookmarks-window-close" ' +
+                        'title="Close the bookmarks window"></div></div>';
+
+                    content += '<h3>Create Bookmark</h3>' +
                         '<form class="create-bookmark">' +
                         '<input type="text" class="bookmark-name" placeholder="Name">' +
-                        '<input type="submit" value="Create"></form>' +
-                        '<h3>Bookmarks</h3>';
+                        '<input type="submit" value="Create"></form></div>';
 
-                    content += "<ul>";
+                    content += '<div class="diva-bookmarks-window-list">' +
+                        '<h3>Bookmarks</h3><ul>';
 
                     for (var i = 0; i < bookmarkObject.length; i++)
                     {
@@ -99,7 +103,7 @@ Bookmark locations in the document.
                             '<a href="#delete" class="delete-bookmark">' +
                             'Delete</a></li>';
                     }
-                    content += "</ul>";
+                    content += "</ul></div>";
                     // Fill it with the content
                     bookmarksDiv.html(content);
                     // Now, we need to bind the event handlers.
@@ -196,8 +200,8 @@ Bookmark locations in the document.
             },
             handleClick: function(event)
             {
-                $(".diva-bookmarks").show();
-                $(".diva-bookmarks").hover(null,function(){$(".diva-bookmarks").hide();});
+                $(".diva-bookmarks-window").show();
+//                $(".diva-bookmarks").hover(null,function(){$(".diva-bookmarks").hide();});
                 return false;
             },
             pluginName: 'bookmark',

@@ -4,21 +4,52 @@
   .plugin-icon("bookmark");
 }
 
-.diva-bookmarks {
+.diva-bookmarks-window {
   background: #FFFFFF;
   position: absolute;
-  top: 200px;
-  left: 200px;
+  top: 150px;
+  left: 50px;
   width: auto;
-  height: 500px;
-  overflow-y: scroll;
+//  height: 500px;
+//  overflow-y: scroll;
   display: none;
-  padding: 1em;
+//  padding: 1em;
   .pretty-shadow(2px);
+  border: 1px solid #CCCCCC;
+}
+
+.diva-bookmarks-window-form {
+  padding: 1em;
+}
+
+.diva-bookmarks-window-list {
+  border-top: 1px solid #CCCCCC;
+  padding: 0 1em 1em 1em;
+  overflow-y: scroll;
+  max-height: 300px;
 }
 
 .delete-bookmark {
   color: red;
+}
+
+.diva-bookmarks-window-toolbar {
+  div {
+  height: 18px;
+  width: 18px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  z-index: 109;
+  display: inline-block;
+  margin-right: 5px;
+  background-image: url("../img/actions.png");
+  }
+}
+
+.diva-bookmarks-window-close {
+    &:hover {
+        background-position: -20px 0;
+    }
 }
 
 /* End bookmark plugin */
