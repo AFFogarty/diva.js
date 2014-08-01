@@ -11,7 +11,7 @@ Bookmark locations in the document.
         {
             init: function(divaSettings, divaInstance)
             {
-//                Bookmark the current location if event called
+                // Bookmark the current location if event called
                 diva.Events.subscribe("BookmarkCurrentLocation",
                     function()
                     {
@@ -158,7 +158,6 @@ Bookmark locations in the document.
                                 {
                                     // We don't want the link to trigger
                                     event.preventDefault();
-                                    console.log("Click trigger on ", index);
                                     divaInstance.goToBookmark(index);
                                 });
                         }
@@ -172,7 +171,6 @@ Bookmark locations in the document.
                                 {
                                     // We don't want the link to trigger
                                     event.preventDefault();
-                                    console.log("Delete trigger on ", index);
                                     divaInstance.removeBookmark(index);
                                 });
                         }
