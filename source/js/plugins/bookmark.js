@@ -45,7 +45,6 @@ Bookmark locations in the document.
 
                     bookmarkObject.push(bookmark);
                     diva.Events.publish("BookmarksUpdated", bookmarkObject);
-                    _render_gui_panel();
                     return bookmark;
                 }
 
@@ -68,6 +67,7 @@ Bookmark locations in the document.
                 {
                     localStorage.setItem("diva-bookmarks",
                         JSON.stringify(bookmarkObject));
+                    _render_gui_panel();
                 }
 
                 /**
@@ -77,6 +77,7 @@ Bookmark locations in the document.
                  */
                 function _render_gui_panel()
                 {
+                    // So that we don't have memory leaks
                     bookmarksDiv.empty();
 
                     var content = '<h3>Create Bookmark</h3>' +
@@ -90,13 +91,15 @@ Bookmark locations in the document.
                     for (var i = 0; i < bookmarkObject.length; i++)
                     {
                         content += '<li><a href="' + bookmarkObject[i]["page"]
-                            + '">' + bookmarkObject[i]["name"] + "</a></li>";
+                            + '" class="visit-bookmark">' + bookmarkObject[i]["name"] + '</a> - ' +
+                            '<a href="#delete" class="delete-bookmark">' +
+                            'Delete</a></li>';
                     }
                     content += "</ul>";
                     // Fill it with the content
                     bookmarksDiv.html(content);
                     // Now, we need to bind the event handlers.
-                    bookmarksDiv.find("li a").each(
+                    bookmarksDiv.find(".visit-bookmark").each(
                         function(index)
                         {
                             // Trigger the page redirection
@@ -107,6 +110,20 @@ Bookmark locations in the document.
                                     event.preventDefault();
                                     console.log("Click trigger on ", index);
                                     divaInstance.goToBookmark(index);
+                                });
+                        }
+                    );
+                    bookmarksDiv.find(".delete-bookmark").each(
+                        function(index)
+                        {
+                            // Trigger the page redirection
+                            $(this).click(
+                                function(event)
+                                {
+                                    // We don't want the link to trigger
+                                    event.preventDefault();
+                                    console.log("Delete trigger on ", index);
+                                    divaInstance.removeBookmark(index);
                                 });
                         }
                     );
@@ -131,7 +148,7 @@ Bookmark locations in the document.
                  */
                 divaInstance.bookmarkCurrentLocation = function(name)
                 {
-                    if (name === undefined)
+                    if (name === undefined || name === "")
                     {
                         name = "Bookmark " + bookmarkObject.length;
                     }
