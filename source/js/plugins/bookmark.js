@@ -136,16 +136,17 @@ Bookmark locations in the document.
                     // So that we don't have memory leaks
                     listDiv.empty();
 
-                    var content = '<h3>Bookmarks</h3><ul>';
+                    var content = '<h3>Bookmarks</h3><table>';
 
-                    for (var i = 0; i < bookmarkObject.length; i++)
+                    for (var i = 0; i < bookmarkObject.length; i++
+                        )
                     {
-                        content += '<li><a href="' + bookmarkObject[i]["page"]
-                            + '" class="visit-bookmark">' + bookmarkObject[i]["name"] + '</a> - ' +
-                            '<a href="#delete" class="delete-bookmark">' +
-                            'Delete</a></li>';
+                        content += '<tr><td><a href="' + bookmarkObject[i]["page"]
+                            + '" class="visit-bookmark">' + bookmarkObject[i]["name"] + '</a></td>' +
+                            '<td><a href="#delete" class="delete-bookmark">' +
+                            'Delete</a></td></tr>';
                     }
-                    content += "</ul>";
+                    content += "</table>";
                     // Fill it with the content
                     listDiv.html(content);
                     // Now, we need to bind the event handlers.

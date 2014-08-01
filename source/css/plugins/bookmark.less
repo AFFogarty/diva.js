@@ -10,6 +10,7 @@
   top: 150px;
   left: 50px;
   width: auto;
+  max-width: 300px;
 //  height: 500px;
 //  overflow-y: scroll;
   display: none;
@@ -27,6 +28,20 @@
   padding: 0 1em 1em 1em;
   overflow-y: scroll;
   max-height: 300px;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  tr {
+    width: 100%;
+    border-top: 1px solid #CCCCCC;
+  }
+
+  td {
+    padding: 10px 0 10px 0;
+  }
 }
 
 .delete-bookmark {
@@ -36,6 +51,7 @@
   width: 13px;
   height: 15px;
   text-indent: -9999px;
+  margin-left: 10px;
 
   &:hover {
     background-position: -13px 0;
