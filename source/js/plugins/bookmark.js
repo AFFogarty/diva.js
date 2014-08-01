@@ -195,6 +195,8 @@ Bookmark locations in the document.
                     console.log(divaOuter);
                     // Grab the zoom level from Diva
                     var zoomLevel = divaInstance.getZoomLevel();
+                    var divaWidth = divaOuter.width();
+                    var divaHeight = divaOuter.height();
 
                     // Calculate the offset values so that we can save the
                     // exact location.
@@ -206,11 +208,14 @@ Bookmark locations in the document.
                     console.log("currentScrollLeft");
                     console.log(currentScrollLeft);
 
+                    var xOffset = currentScrollLeft + (divaWidth / 2);
+                    var yOffset = currentScrollTop + (divaHeight / 2);
+
                     _add_bookmark(
                         name,
                         divaInstance.getCurrentPageNumber(),
-                        currentScrollLeft,
-                        currentScrollTop,
+                        xOffset,
+                        yOffset,
                         zoomLevel
                     );
                     _save_bookmarks();
@@ -247,10 +252,13 @@ Bookmark locations in the document.
                     var bookmark = bookmarkObject[parseInt(index)];
                     var divaOuter = $(divaSettings.parentSelector.selector + " .diva-outer");
 
+                    var divaWidth = divaOuter.width();
+                    var divaHeight = divaOuter.height();
+
                     divaInstance.setZoomLevel(bookmark.zoom);
                     divaInstance.gotoPageByNumber(bookmark.page);
-                    divaOuter.scrollTop(bookmark.yOffset);
-                    divaOuter.scrollLeft(bookmark.xOffset);
+                    divaOuter.scrollTop(bookmark.yOffset - (divaHeight / 2));
+                    divaOuter.scrollLeft(bookmark.xOffset - (divaWidth / 2));
                 };
 
                 return true;
