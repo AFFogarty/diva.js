@@ -43,7 +43,7 @@ Bookmark locations in the document.
                         name: name
                     };
 
-                    bookmarkObject.push(bookmark);
+                    bookmarkObject.unshift(bookmark);
                     diva.Events.publish("BookmarksUpdated", bookmarkObject);
                     return bookmark;
                 }
@@ -82,7 +82,7 @@ Bookmark locations in the document.
 
                     var content = '<h3>Create Bookmark</h3>' +
                         '<form class="create-bookmark">' +
-                        '<input type="text" class="bookmark-name">' +
+                        '<input type="text" class="bookmark-name" placeholder="Name">' +
                         '<input type="submit" value="Create"></form>' +
                         '<h3>Bookmarks</h3>';
 
