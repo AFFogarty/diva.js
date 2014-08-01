@@ -85,7 +85,7 @@ Bookmark locations in the document.
                     bookmarksDiv.empty();
 
                     var content = '<div class="diva-bookmarks-window-form"><div class="diva-bookmarks-window-toolbar">' +
-                        '<div id="diva-bookmarks-window-close" ' +
+                        '<div class="diva-bookmarks-window-close" ' +
                         'title="Close the bookmarks window"></div></div>';
 
                     content += '<h3>Create Bookmark</h3>' +
@@ -147,6 +147,12 @@ Bookmark locations in the document.
                                     alert('Bookmark "' + name + '" created at current location');
                                 }
                             );
+                        }
+                    )
+                    bookmarksDiv.find(".diva-bookmarks-window-close").click(
+                        function()
+                        {
+                            bookmarksDiv.hide();
                         }
                     )
                 }
