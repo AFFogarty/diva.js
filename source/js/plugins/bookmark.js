@@ -12,7 +12,11 @@ Bookmark locations in the document.
             init: function(divaSettings, divaInstance)
             {
 //                Bookmark the current location if event called
-//                diva.Events.subscribe("BookmarkCurrentLocation", divaInstance.bookmarkCurrentLocation);
+                diva.Events.subscribe("BookmarkCurrentLocation",
+                    function()
+                    {
+                        divaInstance.bookmarkCurrentLocation();
+                    });
 
                 // Create the pop-up window.
                 $("body").append('<div class="diva-bookmarks">Lol</div>');
