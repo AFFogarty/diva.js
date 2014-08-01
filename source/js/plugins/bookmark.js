@@ -42,12 +42,15 @@ Bookmark locations in the document.
                 // Initialize the window
                 _render_bookmark_window();
 
-                function _add_bookmark(pageIndex, name)
+                function _add_bookmark(name, pageIndex, xOffset, yOffset, zoom)
                 {
                     // The bookmark object that we will save
                     var bookmark = {
                         page: pageIndex,
-                        name: name
+                        name: name,
+                        xOffset: xOffset,
+                        yOffset: yOffset,
+                        zoom: zoom
                     };
 
                     bookmarkObject.unshift(bookmark);
@@ -188,7 +191,28 @@ Bookmark locations in the document.
                         name = "Bookmark " + bookmarkObject.length;
                     }
 
-                    _add_bookmark(divaInstance.getCurrentPageNumber(), name);
+                    var divaOuter = $(divaSettings.parentSelector.selector + " .diva-outer");
+                    console.log(divaOuter);
+                    // Grab the zoom level from Diva
+                    var zoomLevel = divaInstance.getZoomLevel();
+
+                    // Calculate the offset values so that we can save the
+                    // exact location.
+                    // Get the height above top for that box
+                    var currentScrollTop = parseInt($(divaOuter).scrollTop(), 10);
+                    console.log("currentScrollTop");
+                    console.log(currentScrollTop);
+                    var currentScrollLeft = parseInt($(divaOuter).scrollLeft(), 10);
+                    console.log("currentScrollLeft");
+                    console.log(currentScrollLeft);
+
+                    _add_bookmark(
+                        name,
+                        divaInstance.getCurrentPageNumber(),
+                        currentScrollLeft,
+                        currentScrollTop,
+                        zoomLevel
+                    );
                     _save_bookmarks();
                 };
 
@@ -220,7 +244,13 @@ Bookmark locations in the document.
                  */
                 divaInstance.goToBookmark = function(index)
                 {
-                    divaInstance.gotoPageByNumber(bookmarkObject[parseInt(index)].page);
+                    var bookmark = bookmarkObject[parseInt(index)];
+                    var divaOuter = $(divaSettings.parentSelector.selector + " .diva-outer");
+
+                    divaInstance.setZoomLevel(bookmark.zoom);
+                    divaInstance.gotoPageByNumber(bookmark.page);
+                    divaOuter.scrollTop(bookmark.yOffset);
+                    divaOuter.scrollLeft(bookmark.xOffset);
                 };
 
                 return true;
