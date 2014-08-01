@@ -30,7 +30,16 @@
 }
 
 .delete-bookmark {
+  display: inline-block;
+  background-image: url("@{iconPath}/plugins/bookmark/trash.png");
   color: red;
+  width: 13px;
+  height: 15px;
+  text-indent: -9999px;
+
+  &:hover {
+    background-position: -13px 0;
+  }
 }
 
 .diva-bookmarks-window-toolbar {
