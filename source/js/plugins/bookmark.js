@@ -4,6 +4,7 @@ Bookmark locations in the document.
 
 (function ($)
 {
+    "use strict";
     window.divaPlugins.push((function()
     {
         var settings = {};
@@ -59,16 +60,6 @@ Bookmark locations in the document.
                 }
 
                 /**
-                 * Sort the bookmark list by page.
-                 *
-                 * @private
-                 */
-                function _sort_bookmarks()
-                {
-                    bookmarkObject.sort(function(a,b){return a-b;});
-                }
-
-                /**
                  * Persist the bookmarks to the user's browser.
                  *
                  * @private
@@ -94,8 +85,7 @@ Bookmark locations in the document.
                         '<div class="diva-bookmarks-window-close" ' +
                         'title="Close the bookmarks window"></div></div>';
 
-                    content += '<h3>Create Bookmark</h3>' +
-                        '<form class="create-bookmark">' +
+                    content += '<h3>Create Bookmark</h3> <form class="create-bookmark">' +
                         '<input type="text" class="bookmark-name" placeholder="Name">' +
                         '<input type="submit" value="Create"></form></div>';
 
@@ -135,7 +125,7 @@ Bookmark locations in the document.
                  */
                 function _render_bookmarks_list()
                 {
-                    listDiv = $(bookmarksDiv.selector + " .diva-bookmarks-window-list");
+                    var listDiv = $(bookmarksDiv.selector + " .diva-bookmarks-window-list");
                     // So that we don't have memory leaks
                     listDiv.empty();
 
@@ -144,8 +134,10 @@ Bookmark locations in the document.
                     for (var i = 0; i < bookmarkObject.length; i++
                         )
                     {
-                        content += '<tr><td><a href="' + bookmarkObject[i]["page"]
-                            + '" class="visit-bookmark">' + bookmarkObject[i]["name"] + '</a></td>' +
+                        content += '<tr><td><a href="' + bookmarkObject[i].page
+                            + '" class="visit-bookmark">'
+                            + bookmarkObject[i].name
+                            + '</a></td>' +
                             '<td><a href="#delete" class="delete-bookmark">' +
                             'Delete</a></td></tr>';
                     }
@@ -192,7 +184,7 @@ Bookmark locations in the document.
                     }
 
                     var divaOuter = $(divaSettings.parentSelector.selector + " .diva-outer");
-                    console.log(divaOuter);
+//                    console.log(divaOuter);
                     // Grab the zoom level from Diva
                     var zoomLevel = divaInstance.getZoomLevel();
                     var divaWidth = divaOuter.width();
@@ -202,11 +194,11 @@ Bookmark locations in the document.
                     // exact location.
                     // Get the height above top for that box
                     var currentScrollTop = parseInt($(divaOuter).scrollTop(), 10);
-                    console.log("currentScrollTop");
-                    console.log(currentScrollTop);
+//                    console.log("currentScrollTop");
+//                    console.log(currentScrollTop);
                     var currentScrollLeft = parseInt($(divaOuter).scrollLeft(), 10);
-                    console.log("currentScrollLeft");
-                    console.log(currentScrollLeft);
+//                    console.log("currentScrollLeft");
+//                    console.log(currentScrollLeft);
 
                     var xOffset = currentScrollLeft + (divaWidth / 2);
                     var yOffset = currentScrollTop + (divaHeight / 2);
@@ -263,10 +255,9 @@ Bookmark locations in the document.
 
                 return true;
             },
-            handleClick: function(event)
+            handleClick: function()
             {
                 $(".diva-bookmarks-window").show();
-//                $(".diva-bookmarks").hover(null,function(){$(".diva-bookmarks").hide();});
                 return false;
             },
             pluginName: 'bookmark',
