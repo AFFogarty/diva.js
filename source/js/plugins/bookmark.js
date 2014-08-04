@@ -184,7 +184,6 @@ Bookmark locations in the document.
                     }
 
                     var divaOuter = $(divaSettings.parentSelector.selector + " .diva-outer");
-//                    console.log(divaOuter);
                     // Grab the zoom level from Diva
                     var zoomLevel = divaInstance.getZoomLevel();
                     var divaWidth = divaOuter.width();
@@ -194,11 +193,7 @@ Bookmark locations in the document.
                     // exact location.
                     // Get the height above top for that box
                     var currentScrollTop = parseInt($(divaOuter).scrollTop(), 10);
-//                    console.log("currentScrollTop");
-//                    console.log(currentScrollTop);
                     var currentScrollLeft = parseInt($(divaOuter).scrollLeft(), 10);
-//                    console.log("currentScrollLeft");
-//                    console.log(currentScrollLeft);
 
                     var xOffset = currentScrollLeft + (divaWidth / 2);
                     var yOffset = currentScrollTop + (divaHeight / 2);
