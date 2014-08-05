@@ -78,16 +78,29 @@ Allows you to highlight regions of a page image
                         this.setX(x);
                         this.setY(y);
 
+                        this.render();
+                    }
+
+                    /**
+                     * Add the note Div to the browser.
+                     */
+                    Annotation.prototype.render = function ()
+                    {
                         // Create the note div
                         $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '" title=" ' + this.text + ' "></div>');
                         // Pick out the note div so that we can keep track
                         this.noteDiv = divaSettings.parentSelector.find("." + this.uuid);
                         // Make the note draggable
                         this.bindDraggable();
-                        console.log(this.noteDiv);
-                        // Open on click
-                        this.noteDiv.click(this.open);
-                    }
+                    };
+
+                    /**
+                     * Remove the note Div from browser.
+                     */
+                    Annotation.prototype.unRender = function ()
+                    {
+                        this.noteDiv.remove();
+                    };
 
                     /**
                      * Set the note's text.
