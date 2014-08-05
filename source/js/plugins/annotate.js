@@ -10,7 +10,8 @@ Allows you to highlight regions of a page image
     /**
      * A UUID helper function that I found online.
      */
-    var guid = (function() {
+    var guid = (function()
+    {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
                 .toString(16)
@@ -38,6 +39,14 @@ Allows you to highlight regions of a page image
 
                 var annotationObj = {};
 
+                /**
+                 * This list contains the yellow note divs currently instantiated.
+                 * We will flush this div frequently.
+                 *
+                 * @type {Array}
+                 */
+                var noteDivCollection = [];
+
                 // Event handlers
                 diva.Events.subscribe("VisiblePageDidChange", _page_change_event_handler);
                 diva.Events.subscribe("HighlightCompleted", _prepare_clickable_annotations);
@@ -49,9 +58,9 @@ Allows you to highlight regions of a page image
                 var Annotation = (function () {
                     function Annotation(x, y) {
                         /*
-                        Class fields
+                         Class fields
                          */
-                        this.text =  "";
+                        this.text = "";
                         // Whether or not the window is opened.
                         this.isOpen = false;
                         // Location
@@ -64,15 +73,17 @@ Allows you to highlight regions of a page image
                         this.uuid = guid();
 
                         /*
-                        Construction
+                         Construction
                          */
                         this.setX(x);
                         this.setY(y);
 
                         // Create the note div
-                        $(divaSettings.parentSelector).append('<div class="annotation ' + this.uuid + '"></div>');
+                        $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '"></div>');
                         // Pick out the note div so that we can keep track
                         this.noteDiv = divaSettings.parentSelector.find("." + this.uuid);
+                        // Make the note draggable
+                        this.bindDraggable();
                         console.log(this.noteDiv);
                         // Open on click
                         this.noteDiv.click(this.open);
@@ -99,7 +110,8 @@ Allows you to highlight regions of a page image
                     /**
                      * Open the edit window for the given note.
                      */
-                    Annotation.prototype.open = function () {
+                    Annotation.prototype.open = function ()
+                    {
                         console.log(this.isOpen);
                         if (this.isOpen === false) {
                             // Create the edit window
@@ -108,6 +120,40 @@ Allows you to highlight regions of a page image
                             this.editWindow = $(divaSettings.parentSelector + " ");
                             this.isOpen = true;
                         }
+                    };
+
+                    Annotation.prototype.bindDraggable = function ()
+                    {
+                        var dragging = false;
+                        var note = this.noteDiv;
+
+                        note.mousedown(function()
+                            {
+                                console.log("mousedown");
+                                $(window).mousemove(function(event)
+                                {
+                                    dragging = true;
+
+                                    var parentOffset = note.parent().offset();
+                                    var relativeXPosition = (event.pageX - parentOffset.left); //offset -> method allows you to retrieve the current position of an element 'relative' to the document
+                                    var relativeYPosition = (event.pageY - parentOffset.top);
+
+                                    note.css(
+                                        {
+                                            left: relativeXPosition,
+                                            top: relativeYPosition
+                                        }
+                                    );
+                                });
+                            });
+                        // Listen for all mouse-ups
+                        $(document).mouseup(function()
+                            {
+                                console.log("Drag end");
+                                dragging = false;
+                                $(window).unbind("mousemove");
+                                // TODO: Persist the new X and Y locations
+                            });
                     };
 
                     /**
