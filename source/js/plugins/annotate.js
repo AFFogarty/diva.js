@@ -91,11 +91,21 @@ Allows you to highlight regions of a page image
                     }
 
                     /**
+                     * Set the note's text.
+                     */
+                    Annotation.prototype.setText = function (newText)
+                    {
+                        this.noteDiv.prop('title', newText);
+                        this.text = newText;
+                    };
+
+                    /**
                      * Set the X location of the note.
                      *
                      * @param pX
                      */
-                    Annotation.prototype.setX = function (pX) {
+                    Annotation.prototype.setX = function (pX)
+                    {
                         this.x = parseInt(pX);
                     };
 
@@ -104,7 +114,8 @@ Allows you to highlight regions of a page image
                      *
                      * @param pY
                      */
-                    Annotation.prototype.setY = function (pY) {
+                    Annotation.prototype.setY = function (pY)
+                    {
                         this.y = parseInt(pY);
                     };
 
@@ -165,8 +176,8 @@ Allows you to highlight regions of a page image
                                 dragging = false;
                                 $(window).unbind("mousemove");
                                 // TODO: Persist the new X and Y locations
-                                self.x = relativeXPosition;
-                                self.y = relativeYPosition;
+                                self.setX(relativeXPosition);
+                                self.setY(relativeYPosition);
                             });
                     };
 
@@ -212,8 +223,9 @@ Allows you to highlight regions of a page image
 
 
                 /**
-                 * Render the entire bookmarks window.
+                 * Render the "Edit Annotation" window's content.
                  *
+                 * @param annotation
                  * @private
                  */
                 function _render_annotate_window(annotation)
@@ -225,22 +237,21 @@ Allows you to highlight regions of a page image
                         '<div class="diva-annotate-window-close" ' +
                         'title="Close the annotation window"></div></div>';
 
-                    content += '<h3>Edit Annotation</h3> <form class="create-annotation">' +
+                    content += '<h3>Edit Annotation</h3> <form class="edit-annotation">' +
                         '<textarea rows="4" cols="35" class="annotation-name" placeholder="Name">'
-                        + annotation.text + '</textarea><input type="submit" value="Create"></form></div>';
+                        + annotation.text + '</textarea></form></div>';
 
                     // Fill it with the content
                     annotationsDiv.html(content);
 
-                    annotationsDiv.find(".create-annotation").each(
+                    annotationsDiv.find(".annotation-name").each(
                         function()
                         {
-                            $(this).submit(
+                            $(this).change(
                                 function(event)
                                 {
-                                    event.preventDefault();
-                                    var name = annotationsDiv.find(".annotation-name").val();
-                                    divaInstance.bookmarkCurrentLocation(name);
+                                    var newText = $(this).val();
+                                    annotation.setText(newText);
                                 }
                             );
                         }
