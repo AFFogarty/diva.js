@@ -83,33 +83,12 @@ Allows you to highlight regions of a page image
                     }
 
                     /**
-                     * Add the note Div to the browser.
-                     */
-                    Annotation.prototype.render = function ()
-                    {
-                        // Create the note div
-                        $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '" title=" ' + this.text + ' "></div>');
-                        // Pick out the note div so that we can keep track
-                        this.noteDiv = divaSettings.parentSelector.find("." + this.uuid);
-                        // Make the note draggable
-                        this.bindDraggable();
-                    };
-
-                    /**
-                     * Remove the note Div from browser.
-                     */
-                    Annotation.prototype.unRender = function ()
-                    {
-                        this.noteDiv.remove();
-                    };
-
-                    /**
                      * Set the note's text.
                      */
                     Annotation.prototype.setText = function (newText)
                     {
-                        this.noteDiv.prop('title', newText);
-                        this.text = newText;
+                        this.noteDiv.prop('title', String(newText));
+                        this.text = String(newText);
                     };
 
                     /**
@@ -205,6 +184,27 @@ Allows you to highlight regions of a page image
                             annotationsDiv.hide();
                             this.isOpen = false;
                         }
+                    };
+
+                    /**
+                     * Add the note Div to the browser.
+                     */
+                    Annotation.prototype.render = function ()
+                    {
+                        // Create the note div
+                        $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '" title=" ' + this.text + ' "></div>');
+                        // Pick out the note div so that we can keep track
+                        this.noteDiv = divaSettings.parentSelector.find("." + this.uuid);
+                        // Make the note draggable
+                        this.bindDraggable();
+                    };
+
+                    /**
+                     * Remove the note Div from browser.
+                     */
+                    Annotation.prototype.unRender = function ()
+                    {
+                        this.noteDiv.remove();
                     };
 
                     return Annotation;
