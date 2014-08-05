@@ -137,8 +137,8 @@ Allows you to highlight regions of a page image
                                     dragging = true;
 
                                     var parentOffset = note.parent().offset();
-                                    var relativeXPosition = (event.pageX - parentOffset.left) + parseInt($(divaOuter).scrollLeft(), 10); //offset -> method allows you to retrieve the current position of an element 'relative' to the document
-                                    var relativeYPosition = (event.pageY - parentOffset.top) + parseInt($(divaOuter).scrollTop(), 10);
+                                    var relativeXPosition = (event.pageX - parentOffset.left) + parseInt($(divaOuter).scrollLeft(), 10) - 10; //offset -> method allows you to retrieve the current position of an element 'relative' to the document
+                                    var relativeYPosition = (event.pageY - parentOffset.top) + parseInt($(divaOuter).scrollTop(), 10) - 10;
 
                                     note.css(
                                         {
