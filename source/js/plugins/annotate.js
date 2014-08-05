@@ -35,9 +35,8 @@ Allows you to highlight regions of a page image
                 var divaOuter = $(divaSettings.parentSelector.selector + " .diva-outer");
 
                 // Create the pop-up window.
-                $(divaSettings.parentSelector).append('<div class="diva-annotate-window">TEST!</div>');
+                $(divaSettings.parentSelector).find(".diva-outer").append('<div class="diva-annotate-window">TEST!</div>');
                 var annotationsDiv = $(".diva-annotate-window");
-                _render_annotate_window();
 
                 var annotationObj = {};
 
@@ -116,10 +115,11 @@ Allows you to highlight regions of a page image
                     {
                         console.log(this.isOpen);
                         if (this.isOpen === false) {
-                            // Create the edit window
-                            $(divaSettings.parentSelector).append(
-                                '<div class="' + this.uuid + '">Test</div>');
-                            this.editWindow = $(divaSettings.parentSelector + " ");
+                            // Create the edit window and fill it with our content
+                            _render_annotate_window(this);
+                            annotationsDiv.show();
+                            // Place the edit window beside the note
+                            annotationsDiv.css({top: this.y + 30, left: this.x + 30});
                             this.isOpen = true;
                         }
                     };
@@ -128,18 +128,28 @@ Allows you to highlight regions of a page image
                     {
                         var dragging = false;
                         var note = this.noteDiv;
+                        var self = this;
+
+                        var relativeXPosition;
+                        var relativeYPosition;
 
                         note.mousedown(function()
                             {
                                 console.log("mousedown");
+                                // Create the edit window
+                                self.close();
+                                self.open();
+                                // Handle drag if applicable
                                 $(window).mousemove(function(event)
                                 {
+                                    // Close the edit window if it's open
+                                    self.close();
+                                    // Do the drag
                                     dragging = true;
-
                                     var parentOffset = note.parent().offset();
-                                    var relativeXPosition = (event.pageX - parentOffset.left) + parseInt($(divaOuter).scrollLeft(), 10) - 10; //offset -> method allows you to retrieve the current position of an element 'relative' to the document
-                                    var relativeYPosition = (event.pageY - parentOffset.top) + parseInt($(divaOuter).scrollTop(), 10) - 10;
-
+                                    relativeXPosition = (event.pageX - parentOffset.left) + parseInt($(divaOuter).scrollLeft(), 10) - 10;
+                                    relativeYPosition = (event.pageY - parentOffset.top) + parseInt($(divaOuter).scrollTop(), 10) - 10;
+                                    // Use CSS to move the div
                                     note.css(
                                         {
                                             left: relativeXPosition,
@@ -155,6 +165,8 @@ Allows you to highlight regions of a page image
                                 dragging = false;
                                 $(window).unbind("mousemove");
                                 // TODO: Persist the new X and Y locations
+                                self.x = relativeXPosition;
+                                self.y = relativeYPosition;
                             });
                     };
 
@@ -164,15 +176,11 @@ Allows you to highlight regions of a page image
                     Annotation.prototype.close = function () {
                         if (this.isOpen)
                         {
-                            this.editWindow.remove();
+                            annotationsDiv.hide();
                             this.isOpen = false;
                         }
                     };
 
-                    Annotation.prototype.renderNote = function () {
-                        this.noteDiv.setX(this.x);
-                        this.noteDiv.setY(this.y);
-                    };
                     return Annotation;
                 })();
 
@@ -208,18 +216,18 @@ Allows you to highlight regions of a page image
                  *
                  * @private
                  */
-                function _render_annotate_window()
+                function _render_annotate_window(annotation)
                 {
                     // So that we don't have memory leaks
                     annotationsDiv.empty();
 
                     var content = '<div class="diva-annotate-window-form"><div class="diva-annotate-window-toolbar">' +
                         '<div class="diva-annotate-window-close" ' +
-                        'title="Close the bookmarks window"></div></div>';
+                        'title="Close the annotation window"></div></div>';
 
-                    content += '<h3>Create Annotation</h3> <form class="create-annotation">' +
-                        '<textarea rows="4" cols="35" class="annotation-name" placeholder="Name"></textarea>' +
-                        '<input type="submit" value="Create"></form></div>';
+                    content += '<h3>Edit Annotation</h3> <form class="create-annotation">' +
+                        '<textarea rows="4" cols="35" class="annotation-name" placeholder="Name">'
+                        + annotation.text + '</textarea><input type="submit" value="Create"></form></div>';
 
                     // Fill it with the content
                     annotationsDiv.html(content);
