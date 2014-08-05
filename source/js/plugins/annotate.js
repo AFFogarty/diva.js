@@ -62,7 +62,7 @@ Allows you to highlight regions of a page image
                         /*
                          Class fields
                          */
-                        this.text = "";
+                        this.text = "LOL I'M A NOTE.";
                         // Whether or not the window is opened.
                         this.isOpen = false;
                         // Location
@@ -81,7 +81,7 @@ Allows you to highlight regions of a page image
                         this.setY(y);
 
                         // Create the note div
-                        $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '"></div>');
+                        $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '" title=" ' + this.text + ' "></div>');
                         // Pick out the note div so that we can keep track
                         this.noteDiv = divaSettings.parentSelector.find("." + this.uuid);
                         // Make the note draggable
