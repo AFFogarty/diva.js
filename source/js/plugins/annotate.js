@@ -66,8 +66,9 @@ Allows you to highlight regions of a page image
                         // Location
                         this.x = 0;
                         this.y = 0;
+                        this.pageIdx = 0;
+
                         this.noteDiv = null;
-                        this.editWindow = null;
 
                         // A UUID for identifying the note
                         this.uuid = guid();
@@ -185,10 +186,13 @@ Allows you to highlight regions of a page image
                         $(document).mouseup(function()
                             {
                                 console.log("Drag end");
-                                dragging = false;
                                 $(window).unbind("mousemove");
-                                self.setX(relativeXPosition);
-                                self.setY(relativeYPosition);
+                                if (dragging === true)
+                                {
+                                    dragging = false;
+                                    self.setX(relativeXPosition);
+                                    self.setY(relativeYPosition);
+                                }
                             });
                     };
 
