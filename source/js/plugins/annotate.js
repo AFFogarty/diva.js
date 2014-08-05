@@ -195,7 +195,7 @@ Allows you to highlight regions of a page image
                     Annotation.prototype.render = function ()
                     {
                         // Create the note div
-                        $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '" title=" ' + this.text + ' "></div>');
+                        $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '" title=" ' + this.text + ' " style="left: ' + this.x + 'px; top: ' + this.y + 'px;"></div>');
                         // Pick out the note div so that we can keep track
                         this.noteDiv = divaSettings.parentSelector.find("." + this.uuid);
                         // Make the note draggable
