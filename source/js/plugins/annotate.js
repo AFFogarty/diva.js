@@ -49,8 +49,7 @@ Allows you to highlight regions of a page image
                 var noteDivCollection = [];
 
                 // Event handlers
-                diva.Events.subscribe("VisiblePageDidChange", _page_change_event_handler);
-                diva.Events.subscribe("HighlightCompleted", _prepare_clickable_annotations);
+                diva.Events.subscribe("VisiblePageDidChange", _prepare_clickable_annotations);
 
                 /*
                 Classes
@@ -175,7 +174,6 @@ Allows you to highlight regions of a page image
                                 console.log("Drag end");
                                 dragging = false;
                                 $(window).unbind("mousemove");
-                                // TODO: Persist the new X and Y locations
                                 self.setX(relativeXPosition);
                                 self.setY(relativeYPosition);
                             });
@@ -199,28 +197,6 @@ Allows you to highlight regions of a page image
                 /*
                  * Private functions
                  */
-
-                /**
-                 * Callback function fired when the page changes.
-                 *
-                 * @param pageIdx
-                 * @param pageName
-                 * @private
-                 */
-                function _page_change_event_handler(pageIdx, pageName)
-                {
-                    // Save the current page
-                    var currentPage = pageIdx;
-                    // Point to the correct
-
-//                    if (annotationObj.page[pageIdx])
-//                    {
-//                        // Print it out to the console.
-//                        diva.Events.publish("PageAnnotation", [annotationObj.page[pageIdx]]);
-//
-//                    }
-                }
-
 
                 /**
                  * Render the "Edit Annotation" window's content.
@@ -264,33 +240,20 @@ Allows you to highlight regions of a page image
                     );
                 }
 
-
                 /**
+                 * Get all of the currently visible pages.
                  *
-                 * @param {type} pageIdx
-                 * @param {type} filename
-                 * @param {type} pageSelector
-                 * @returns {undefined}
+                 * @returns {Array}
+                 * @private
                  */
-                function _annotate_area(pageIdx, filename, pageSelector)
+                function _get_visible_pages()
                 {
-                    if (typeof annotationObj === 'undefined')
-                    {
-                        return;
-                    }
-
-
-                    diva.Events.publish("AnnotateAreaCompleted");
-                }
-
-                function _prepare_clickable_annotations()
-                {
-                    // Get all of currently visible pages
                     var visiblePages = [];
                     var currentPage = divaInstance.getCurrentPageIndex();
+                    var length = divaInstance.getNumberOfPages();
                     visiblePages.push(currentPage);
                     // Pages above the current
-                    for (var i = currentPage + 1; i < divaInstance.getNumberOfPages(); i++)
+                    for (var i = currentPage + 1; i < length; i++)
                     {
                         if (divaInstance.isPageInViewport(i))
                         {
@@ -300,6 +263,11 @@ Allows you to highlight regions of a page image
                         {
                             break;
                         }
+                    }
+                    // Add one extra to the end
+                    if (i !== length)
+                    {
+                        visiblePages.push(i);
                     }
                     // Pages below the current
                     for (i = currentPage - 1; i >= 0; i--)
@@ -313,7 +281,20 @@ Allows you to highlight regions of a page image
                             break;
                         }
                     }
-                    visiblePages = visiblePages.sort(function(a,b){return a-b;});
+                    // Add one extra to the beginning
+                    if (i >= 0)
+                    {
+                        visiblePages.push(i);
+                    }
+                    return visiblePages.sort(function(a,b){return a-b;});
+                }
+
+
+                function _prepare_clickable_annotations()
+                {
+                    // Get all of currently visible pages
+                    var visiblePages = _get_visible_pages();
+
                     console.log(visiblePages);
 
                     // We now have the visible pages, so we want to prepare the
@@ -323,14 +304,6 @@ Allows you to highlight regions of a page image
 
 
                 }
-
-//                function _calculate_pointer_collision(boxes)
-//                {
-//                    // Store a list of x
-////                    var xCollisions = [];
-//
-//                }
-
 
                 /*
                  * Public functions
@@ -342,40 +315,12 @@ Allows you to highlight regions of a page image
                 };
 
                 /**
-                 * Bind a text annotation to an entire page.
-                 *
-                 * @param {type} pageIdx
-                 * @param {type} textContent
-                 * @returns {undefined}
-                 */
-                divaInstance.annotatePage = function(pageIdx, textContent)
-                {
-                    // Save it
-                    annotationObj.page[pageIdx] = String(textContent);
-                };
-
-                /**
                  * Flushes all of the Page Annotations
                  */
                 divaInstance.removeAllPageAnnotations = function()
                 {
                     // Clear out the page annotations
                     annotationObj.page = {};
-                };
-
-                divaInstance.annotateAreaOnPage = function(pageIdx, textContent)
-                {
-                    // Create the corresponding highlight box
-//                    divaInstance.highlightOnPage(pageIdx, regions, colour, divClass);
-
-                    // Prepare for the annotation
-                    if (annotationObj.area[pageIdx] === undefined)
-                    {
-                       // No annotation has been added to this page yet
-                       annotationObj.area[pageIdx] = [];
-                    }
-                    // Add it to the list
-                    annotationObj.area[pageIdx].push(String(textContent));
                 };
 
                 divaInstance.getAnnotations = function()
