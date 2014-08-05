@@ -115,6 +115,22 @@ Allows you to highlight regions of a page image
                     };
 
                     /**
+                     * Get the properties of the Annotation as a javascript
+                     * object.
+                     *
+                     * @returns {{x: *, y: *, page: number, text: *}}
+                     */
+                    Annotation.prototype.getProperties = function ()
+                    {
+                        return {
+                            x: this.x,
+                            y: this.y,
+                            page: this.pageIdx,
+                            text: this.text
+                        };
+                    };
+
+                    /**
                      * Open the edit window for the given note.
                      */
                     Annotation.prototype.open = function ()
@@ -336,6 +352,23 @@ Allows you to highlight regions of a page image
                 /*
                  * Public functions
                  */
+
+                /**
+                 * Create an annotation from the properties array.
+                 *
+                 * @param properties {x: int, y: int, page: int, text: string}
+                 */
+                divaInstance.createAnnotationFromProperties = function (properties)
+                {
+                    // Create the note
+                    var note = new Annotation(properties.x, properties.y);
+                    note.pageIdx = parseInt(properties.page);
+                    note.setText(properties.text);
+                    // Save it
+                    annotationObj.push(note);
+                    // Render it
+                    note.render();
+                };
 
                 divaInstance.createAnnotation = function()
                 {
