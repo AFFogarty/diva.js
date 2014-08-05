@@ -38,7 +38,7 @@ Allows you to highlight regions of a page image
                 $(divaSettings.parentSelector).find(".diva-outer").append('<div class="diva-annotate-window">TEST!</div>');
                 var annotationsDiv = $(".diva-annotate-window");
 
-                var annotationObj = {};
+                var annotationObj = [];
 
                 /**
                  * This list contains the yellow note divs currently instantiated.
@@ -46,7 +46,7 @@ Allows you to highlight regions of a page image
                  *
                  * @type {Array}
                  */
-                var noteDivCollection = [];
+                var visibleAnnotations = [];
 
                 // Event handlers
                 diva.Events.subscribe("VisiblePageDidChange", _prepare_clickable_annotations);
@@ -108,7 +108,10 @@ Allows you to highlight regions of a page image
                      */
                     Annotation.prototype.setY = function (pY)
                     {
+                        // Save the y coordinate
                         this.y = parseInt(pY);
+                        // Save the page index
+                        this.pageIdx = divaInstance.getCurrentPageIndex();
                     };
 
                     /**
@@ -311,15 +314,23 @@ Allows you to highlight regions of a page image
                 {
                     // Get all of currently visible pages
                     var visiblePages = _get_visible_pages();
-
-                    console.log(visiblePages);
-
-                    // We now have the visible pages, so we want to prepare the
-                    // clickable boxes on those pages
-
-
-
-
+                    // Hide all of the visible annotations
+                    for (var i = 0; i <  visibleAnnotations.length; i++)
+                    {
+                        visibleAnnotations[i].unRender();
+                    }
+                    // Make a new visible annotations list
+                    visibleAnnotations = [];
+                    for (i = 0; i < annotationObj.length; i++)
+                    {
+                        if (visiblePages.indexOf(annotationObj[i].pageIdx) > -1)
+                        {
+                            // Keep track of it
+                            visibleAnnotations.push(annotationObj[i]);
+                            // Render it
+                            annotationObj[i].render();
+                        }
+                    }
                 }
 
                 /*
@@ -328,7 +339,8 @@ Allows you to highlight regions of a page image
 
                 divaInstance.createAnnotation = function()
                 {
-                    annotationObj.push(new Annotation(0,0));
+                    var note = new Annotation(0,0);
+                    annotationObj.push(note);
                 };
 
                 /**
@@ -347,9 +359,11 @@ Allows you to highlight regions of a page image
 
                 return true;
             },
-            handleClick: function()
+            handleClick: function(event, divaSettings)
             {
-                $(".diva-annotate-window").show();
+                // Grab the diva instance
+                var divaInstance = $(divaSettings.parentSelector).data("diva");
+                divaInstance.createAnnotation();
                 return false;
             },
             pluginName: 'annotate',
