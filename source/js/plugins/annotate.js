@@ -31,6 +31,8 @@ Allows you to highlight regions of a page image
         {
             init: function(divaSettings, divaInstance)
             {
+                // It's useful to keep track of this
+                var divaOuter = $(divaSettings.parentSelector.selector + " .diva-outer");
 
                 // Create the pop-up window.
                 $(divaSettings.parentSelector).append('<div class="diva-annotate-window">TEST!</div>');
@@ -135,8 +137,8 @@ Allows you to highlight regions of a page image
                                     dragging = true;
 
                                     var parentOffset = note.parent().offset();
-                                    var relativeXPosition = (event.pageX - parentOffset.left); //offset -> method allows you to retrieve the current position of an element 'relative' to the document
-                                    var relativeYPosition = (event.pageY - parentOffset.top);
+                                    var relativeXPosition = (event.pageX - parentOffset.left) + parseInt($(divaOuter).scrollLeft(), 10); //offset -> method allows you to retrieve the current position of an element 'relative' to the document
+                                    var relativeYPosition = (event.pageY - parentOffset.top) + parseInt($(divaOuter).scrollTop(), 10);
 
                                     note.css(
                                         {
