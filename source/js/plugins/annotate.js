@@ -463,6 +463,7 @@ Allows you to highlight regions of a page image
                 {
                     var note = new Annotation(0, 0, 0, "");
                     annotationObj.push(note);
+                    _prepare_clickable_annotations();
                     return note;
                 };
 
