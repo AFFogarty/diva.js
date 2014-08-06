@@ -38,6 +38,11 @@ Allows you to highlight regions of a page image
                 $(divaSettings.parentSelector).find(".diva-outer").append('<div class="diva-annotate-window">TEST!</div>');
                 var annotationsDiv = $(".diva-annotate-window");
 
+                /**
+                 * This array keeps track of all of the Annotations in existence.
+                 *
+                 * @type {Array}
+                 */
                 var annotationObj = [];
 
                 /**
@@ -56,30 +61,25 @@ Allows you to highlight regions of a page image
                  */
 
                 var Annotation = (function () {
-                    function Annotation(x, y) {
+                    function Annotation(x, y, pageIdx, text) {
                         /*
                          Class fields
                          */
-                        this.text = "LOL I'M A NOTE.";
+                        this.text = String(text);
                         // Whether or not the window is opened.
                         this.isOpen = false;
                         // Location
-                        this.x = 0;
-                        this.y = 0;
-                        this.pageIdx = 0;
+                        this.x = parseInt(x);
+                        this.y = parseInt(y);
+                        this.pageIdx = parseInt(pageIdx);
 
                         this.noteDiv = null;
 
                         // A UUID for identifying the note
                         this.uuid = guid();
 
-                        /*
-                         Construction
-                         */
-                        this.setX(x);
-                        this.setY(y);
-
                         this.render();
+                        divaInstance.saveAnnotations();
                     }
 
                     /**
@@ -89,6 +89,7 @@ Allows you to highlight regions of a page image
                     {
                         this.noteDiv.prop('title', String(newText));
                         this.text = String(newText);
+                        divaInstance.saveAnnotations();
                     };
 
                     /**
@@ -96,9 +97,15 @@ Allows you to highlight regions of a page image
                      *
                      * @param pX
                      */
-                    Annotation.prototype.setX = function (pX)
+                    Annotation.prototype.setX = function(pX, zoomLevel)
                     {
                         this.x = parseInt(pX);
+                        divaInstance.saveAnnotations();
+                    };
+
+                    Annotation.prototype.getX = function(zoomLevel)
+                    {
+
                     };
 
                     /**
@@ -106,12 +113,23 @@ Allows you to highlight regions of a page image
                      *
                      * @param pY
                      */
-                    Annotation.prototype.setY = function (pY)
+                    Annotation.prototype.setY = function(pY, zoomLevel)
                     {
                         // Save the y coordinate
                         this.y = parseInt(pY);
-                        // Save the page index
-                        this.pageIdx = divaInstance.getCurrentPageIndex();
+                        this.setPageIdx(divaInstance.getCurrentPageIndex());
+                        divaInstance.saveAnnotations();
+                    };
+
+                    Annotation.prototype.getY = function(zoomLevel)
+                    {
+
+                    };
+
+                    Annotation.prototype.setPageIdx = function(page)
+                    {
+                        this.pageIdx = parseInt(page);
+                        divaInstance.saveAnnotations();
                     };
 
                     /**
@@ -120,7 +138,7 @@ Allows you to highlight regions of a page image
                      *
                      * @returns {{x: *, y: *, page: number, text: *}}
                      */
-                    Annotation.prototype.getProperties = function ()
+                    Annotation.prototype.getProperties = function()
                     {
                         return {
                             x: this.x,
@@ -133,7 +151,7 @@ Allows you to highlight regions of a page image
                     /**
                      * Open the edit window for the given note.
                      */
-                    Annotation.prototype.open = function ()
+                    Annotation.prototype.open = function()
                     {
                         console.log(this.isOpen);
                         if (this.isOpen === false) {
@@ -146,7 +164,7 @@ Allows you to highlight regions of a page image
                         }
                     };
 
-                    Annotation.prototype.bindDraggable = function ()
+                    Annotation.prototype.bindDraggable = function()
                     {
                         var dragging = false;
                         var note = this.noteDiv;
@@ -197,7 +215,7 @@ Allows you to highlight regions of a page image
                     /**
                      * Close the edit window
                      */
-                    Annotation.prototype.close = function () {
+                    Annotation.prototype.close = function() {
                         if (this.isOpen)
                         {
                             annotationsDiv.hide();
@@ -208,7 +226,7 @@ Allows you to highlight regions of a page image
                     /**
                      * Add the note Div to the browser.
                      */
-                    Annotation.prototype.render = function ()
+                    Annotation.prototype.render = function()
                     {
                         // Create the note div
                         $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '" title=" ' + this.text + ' " style="left: ' + this.x + 'px; top: ' + this.y + 'px;"></div>');
@@ -221,7 +239,7 @@ Allows you to highlight regions of a page image
                     /**
                      * Remove the note Div from browser.
                      */
-                    Annotation.prototype.unRender = function ()
+                    Annotation.prototype.unRender = function()
                     {
                         this.noteDiv.remove();
                     };
@@ -349,6 +367,7 @@ Allows you to highlight regions of a page image
                     }
                 }
 
+
                 /*
                  * Public functions
                  */
@@ -358,22 +377,59 @@ Allows you to highlight regions of a page image
                  *
                  * @param properties {x: int, y: int, page: int, text: string}
                  */
-                divaInstance.createAnnotationFromProperties = function (properties)
+                divaInstance.createAnnotationFromProperties = function(properties)
                 {
+                    console.log("Start CreateAnnotationFromProperties()");
                     // Create the note
-                    var note = new Annotation(properties.x, properties.y);
-                    note.pageIdx = parseInt(properties.page);
-                    note.setText(properties.text);
+                    var note = new Annotation(properties.x, properties.y, properties.page, properties.text);
                     // Save it
                     annotationObj.push(note);
                     // Render it
                     note.render();
+                    console.log("End CreateAnnotationFromProperties()");
+                };
+
+                divaInstance.loadAnnotations = function()
+                {
+                    if (localStorage.getItem("diva-annotations") !== null)
+                    {
+                        var propertiesArray = JSON.parse(localStorage.getItem("diva-annotations"));
+                        // Construct all of the objects
+                        for (var i = 0; i < propertiesArray.length; i++)
+                        {
+                            divaInstance.createAnnotationFromProperties(propertiesArray[i]);
+                        }
+                    }
+                };
+
+                /**
+                 *
+                 *
+                 * @returns {Array}
+                 */
+                divaInstance.serializeAnnotations = function()
+                {
+                    var output = [];
+
+                    for (var i = 0; i < annotationObj.length; i++)
+                    {
+                        output.push(annotationObj[i].getProperties());
+                    }
+
+                    return output;
+                };
+
+                divaInstance.saveAnnotations = function()
+                {
+                    localStorage.setItem("diva-annotations",
+                        JSON.stringify(divaInstance.serializeAnnotations()));
                 };
 
                 divaInstance.createAnnotation = function()
                 {
                     var note = new Annotation(0,0);
                     annotationObj.push(note);
+                    return note;
                 };
 
                 /**
@@ -389,6 +445,9 @@ Allows you to highlight regions of a page image
                 {
                    return annotationObj;
                 };
+
+                // Load the annotations saved to the hard drive
+                divaInstance.loadAnnotations();
 
                 return true;
             },
