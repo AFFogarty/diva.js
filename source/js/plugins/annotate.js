@@ -54,7 +54,7 @@ Allows you to highlight regions of a page image
                 var visibleAnnotations = [];
 
                 // Event handlers
-                diva.Events.subscribe("VisiblePageDidChange", _prepare_clickable_annotations);
+                diva.Events.subscribe("VisiblePageDidChange", _queue_prepare_clickable_annotations);
                 diva.Events.subscribe("ZoomLevelDidChange", _prepare_clickable_annotations);
 
                 /*
@@ -343,6 +343,27 @@ Allows you to highlight regions of a page image
                 }
 
 
+                var _queue_prepare_clickable_annotations_timer = null;
+
+                /**
+                 * Perform _prepare_clickable_annotations() after 250ms.
+                 *
+                 * @private
+                 */
+                function _queue_prepare_clickable_annotations()
+                {
+                    if (_queue_prepare_clickable_annotations_timer !== null)
+                    {
+                        window.clearTimeout(_queue_prepare_clickable_annotations_timer);
+                    }
+                    _queue_prepare_clickable_annotations_timer = window.setTimeout(_prepare_clickable_annotations, 250);
+                }
+
+                /**
+                 * Loads the visible notes and renders them.
+                 *
+                 * @private
+                 */
                 function _prepare_clickable_annotations()
                 {
                     console.log("_prepare_clickable_annotations()");
