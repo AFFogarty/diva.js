@@ -120,6 +120,16 @@ Allows you to highlight regions of a page image
                      */
                     Annotation.prototype.setY = function(pY)
                     {
+                        // Handle the edge cases.
+                        var maxHeight = $(divaSettings.innerSelector).height();
+                        if (pY < 0)
+                        {
+                            pY = 0;
+                        }
+                        else if (pY > maxHeight)
+                        {
+                            pY = maxHeight - 20;
+                        }
                         // Save the y coordinate
                         this.y = divaInstance.translateToMaxZoomLevel(parseInt(pY));
                         this.setPageIdx(divaInstance.getCurrentPageIndex());
