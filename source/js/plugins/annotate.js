@@ -55,6 +55,7 @@ Allows you to highlight regions of a page image
 
                 // Event handlers
                 diva.Events.subscribe("VisiblePageDidChange", _prepare_clickable_annotations);
+                diva.Events.subscribe("ZoomLevelDidChange", _prepare_clickable_annotations);
 
                 /*
                 Classes
@@ -78,7 +79,7 @@ Allows you to highlight regions of a page image
                         // A UUID for identifying the note
                         this.uuid = guid();
 
-                        this.render();
+//                        this.render();
                         divaInstance.saveAnnotations();
                     }
 
@@ -97,15 +98,15 @@ Allows you to highlight regions of a page image
                      *
                      * @param pX
                      */
-                    Annotation.prototype.setX = function(pX, zoomLevel)
+                    Annotation.prototype.setX = function(pX)
                     {
-                        this.x = parseInt(pX);
+                        this.x = divaInstance.translateToMaxZoomLevel(parseInt(pX));
                         divaInstance.saveAnnotations();
                     };
 
-                    Annotation.prototype.getX = function(zoomLevel)
+                    Annotation.prototype.getX = function()
                     {
-
+                        return divaInstance.translateFromMaxZoomLevel(this.x);
                     };
 
                     /**
@@ -113,17 +114,17 @@ Allows you to highlight regions of a page image
                      *
                      * @param pY
                      */
-                    Annotation.prototype.setY = function(pY, zoomLevel)
+                    Annotation.prototype.setY = function(pY)
                     {
                         // Save the y coordinate
-                        this.y = parseInt(pY);
+                        this.y = divaInstance.translateToMaxZoomLevel(parseInt(pY));
                         this.setPageIdx(divaInstance.getCurrentPageIndex());
                         divaInstance.saveAnnotations();
                     };
 
-                    Annotation.prototype.getY = function(zoomLevel)
+                    Annotation.prototype.getY = function()
                     {
-
+                        return divaInstance.translateFromMaxZoomLevel(this.y);
                     };
 
                     Annotation.prototype.setPageIdx = function(page)
@@ -159,7 +160,7 @@ Allows you to highlight regions of a page image
                             _render_annotate_window(this);
                             annotationsDiv.show();
                             // Place the edit window beside the note
-                            annotationsDiv.css({top: this.y + 30, left: this.x + 30});
+                            annotationsDiv.css({top: this.getY() + 30, left: this.getX() + 30});
                             this.isOpen = true;
                         }
                     };
@@ -175,7 +176,6 @@ Allows you to highlight regions of a page image
 
                         note.mousedown(function()
                             {
-                                console.log("mousedown");
                                 // Create the edit window
                                 self.close();
                                 self.open();
@@ -201,7 +201,6 @@ Allows you to highlight regions of a page image
                         // Listen for all mouse-ups
                         $(document).mouseup(function()
                             {
-                                console.log("Drag end");
                                 $(window).unbind("mousemove");
                                 if (dragging === true)
                                 {
@@ -229,7 +228,7 @@ Allows you to highlight regions of a page image
                     Annotation.prototype.render = function()
                     {
                         // Create the note div
-                        $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '" title=" ' + this.text + ' " style="left: ' + this.x + 'px; top: ' + this.y + 'px;"></div>');
+                        $(divaSettings.parentSelector).find(".diva-outer").append('<div class="annotation ' + this.uuid + '" title=" ' + this.text + ' " style="left: ' + this.getX() + 'px; top: ' + this.getY() + 'px;"></div>');
                         // Pick out the note div so that we can keep track
                         this.noteDiv = divaSettings.parentSelector.find("." + this.uuid);
                         // Make the note draggable
@@ -346,6 +345,7 @@ Allows you to highlight regions of a page image
 
                 function _prepare_clickable_annotations()
                 {
+                    console.log("_prepare_clickable_annotations()");
                     // Get all of currently visible pages
                     var visiblePages = _get_visible_pages();
                     // Hide all of the visible annotations
@@ -367,7 +367,6 @@ Allows you to highlight regions of a page image
                     }
                 }
 
-
                 /*
                  * Public functions
                  */
@@ -385,7 +384,7 @@ Allows you to highlight regions of a page image
                     // Save it
                     annotationObj.push(note);
                     // Render it
-                    note.render();
+//                    note.render();
                     console.log("End CreateAnnotationFromProperties()");
                 };
 
