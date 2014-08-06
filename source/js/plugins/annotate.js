@@ -95,18 +95,22 @@ Allows you to highlight regions of a page image
 
                     /**
                      * Set the X location of the note.
+                     * X locations are saved relative to the center of the Diva
+                     * viewer.  So if x is "-5" then it is 5 pixels left of center.
                      *
                      * @param pX
                      */
                     Annotation.prototype.setX = function(pX)
                     {
-                        this.x = divaInstance.translateToMaxZoomLevel(parseInt(pX));
+                        var relativeX = parseInt(pX - ($(divaSettings.innerSelector).width() / 2));
+                        this.x = divaInstance.translateToMaxZoomLevel(relativeX);
                         divaInstance.saveAnnotations();
                     };
 
                     Annotation.prototype.getX = function()
                     {
-                        return divaInstance.translateFromMaxZoomLevel(this.x);
+                        return parseInt(divaInstance.translateFromMaxZoomLevel(this.x)
+                            + ($(divaSettings.innerSelector).width() / 2));
                     };
 
                     /**
@@ -447,7 +451,7 @@ Allows you to highlight regions of a page image
 
                 divaInstance.createAnnotation = function()
                 {
-                    var note = new Annotation(0,0);
+                    var note = new Annotation(0, 0, 0, "");
                     annotationObj.push(note);
                     return note;
                 };
